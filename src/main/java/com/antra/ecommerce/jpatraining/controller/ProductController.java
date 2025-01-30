@@ -10,6 +10,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,7 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<ProductVO>> getProduct(@RequestParam(value = "page", defaultValue = "1") int page, @RequestParam(value = "size", defaultValue = "3") int size) {
         log.debug("Get product with page: {} and size: {}", page, size);
         var products = productService.getAllProducts(page, size).stream().map(p -> {
@@ -72,12 +75,13 @@ public class ProductController {
         return ResponseEntity.ok(p);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ProductErrorResponse> handleException(RuntimeException e) {
+
+    @ExceptionHandler({AuthorizationDeniedException.class})
+    public ResponseEntity<ProductErrorResponse> handleException(AuthorizationDeniedException e) {
         var response = new ProductErrorResponse();
-        response.setStatus(HttpStatus.NOT_FOUND.value());
-        response.setMessage(e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setMessage(e.getLocalizedMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
@@ -87,6 +91,7 @@ public class ProductController {
         response.setMessage(e.getLocalizedMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
 
     @ExceptionHandler
     public ResponseEntity<ProductErrorResponse> handleException(Exception e) {
