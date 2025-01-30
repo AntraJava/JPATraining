@@ -12,10 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -27,8 +29,7 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<List<ProductVO>> getProduct(@RequestParam(value = "page", defaultValue = "1") int page, @RequestParam(value = "size", defaultValue = "3") int size) {
+    public ResponseEntity<List<ProductVO>> getProduct(@RequestParam(value = "page", defaultValue = "1") int page, @RequestParam(value = "size", defaultValue = "3") int size, Authentication authentication) {
         log.debug("Get product with page: {} and size: {}", page, size);
         var products = productService.getAllProducts(page, size).stream().map(p -> {
             ProductVO vo = new ProductVO();
@@ -58,6 +59,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('super-admin')")
     public ResponseEntity<ProductVO> getProductById(@PathVariable("id") Integer id) {
         ProductVO p = productService.getProduct(id);
         return ResponseEntity.ok(p);
@@ -91,7 +93,6 @@ public class ProductController {
         response.setMessage(e.getLocalizedMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
-
 
     @ExceptionHandler
     public ResponseEntity<ProductErrorResponse> handleException(Exception e) {
