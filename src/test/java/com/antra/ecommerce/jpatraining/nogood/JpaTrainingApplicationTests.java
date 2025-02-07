@@ -1,4 +1,4 @@
-package com.antra.ecommerce.jpatraining;
+package com.antra.ecommerce.jpatraining.nogood;
 
 import com.antra.ecommerce.jpatraining.entity.Customer;
 import com.antra.ecommerce.jpatraining.entity.Order;
@@ -11,7 +11,6 @@ import com.antra.ecommerce.jpatraining.service.ProductService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.HashSet;

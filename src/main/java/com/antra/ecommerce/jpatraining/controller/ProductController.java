@@ -74,6 +74,7 @@ public class ProductController {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ProductErrorResponse> handleException(RuntimeException e) {
+        log.error("Error: ", e);
         var response = new ProductErrorResponse();
         response.setStatus(HttpStatus.NOT_FOUND.value());
         response.setMessage(e.getMessage());

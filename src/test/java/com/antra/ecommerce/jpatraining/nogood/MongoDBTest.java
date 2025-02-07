@@ -1,4 +1,4 @@
-package com.antra.ecommerce.jpatraining;
+package com.antra.ecommerce.jpatraining.nogood;
 
 import com.antra.ecommerce.jpatraining.document.Invoice;
 import com.antra.ecommerce.jpatraining.repository.mongo.InvoiceRepo;
